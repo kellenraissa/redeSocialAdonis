@@ -1,0 +1,33 @@
+import type { HttpContext } from '@adonisjs/core/http'
+import User from '#models/user'
+import hash from '@adonisjs/core/services/hash'
+
+export default class AuthController {
+  public async login({ request, response, auth }: HttpContext) {
+    const { email, password } = request.only(['email', 'password'])
+
+    try {
+      const user = await User.verifyCredentials(email, password)
+
+      if (!user) {
+        return response.abort('Invalid credentials')
+      }
+
+      return await User.accessTokens.create(user)
+    } catch (error) {
+      response.unauthorized({ message: 'Acesso não autorizado' })
+    }
+  }
+
+  public async logout({ auth, request, response }: HttpContext) {
+    const user = auth.user!
+    await User.accessTokens.delete(user, user.currentAccessToken.identifier)
+    return response.status(203)
+  }
+
+  public async me({ auth, request, response }: HttpContext) {
+    const user = auth.user!
+
+    return user
+  }
+}
