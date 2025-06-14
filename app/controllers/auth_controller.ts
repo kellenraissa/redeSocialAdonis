@@ -13,7 +13,12 @@ export default class AuthController {
         return response.abort('Invalid credentials')
       }
 
-      return await User.accessTokens.create(user)
+      const token = await User.accessTokens.create(user)
+
+      return {
+        token,
+        user,
+      }
     } catch (error) {
       console.log(error)
       response.unauthorized({ message: 'Acesso não autorizado' })

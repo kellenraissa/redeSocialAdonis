@@ -4,7 +4,9 @@ import Comorbidity from '#models/comorbidity'
 import { CreateComorbityValidator } from '#validators/comorbity'
 
 export default class ComorbidityController {
-  public async index({ response }: HttpContext) {
+  public async index({ response, auth }: HttpContext) {
+    console.log('🔍 Entrou no ComorbidityController.store')
+    console.log('🔐 Usuário:', auth.user)
     try {
       const comorbities = await Comorbidity.all()
       return response.ok(comorbities)
@@ -14,10 +16,8 @@ export default class ComorbidityController {
   }
 
   public async store({ request, response }: HttpContext) {
-    console.log(request)
     try {
       const data = await request.validateUsing(CreateComorbityValidator)
-      console.log(data)
       const comorbity = await Comorbidity.create(data)
       return response.created({ message: 'Comorbidade cadastrada com sucesso!', comorbity })
     } catch (error) {

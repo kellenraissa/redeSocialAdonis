@@ -2,28 +2,44 @@
 |--------------------------------------------------------------------------
 | Routes file
 |--------------------------------------------------------------------------
-|
-| The routes file is used for defining the HTTP routes.
-|
+| Todas as rotas da aplicação, separadas por tipo de acesso.
+| Prefixo geral: /api
 */
+
+import Route from '@adonisjs/core/services/router'
+import { middleware } from './kernel.js'
 
 const UserController = () => import('#controllers/user_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const ComorbidityController = () => import('#controllers/comorbidity_controller')
-import Route from '@adonisjs/core/services/router'
-import { middleware } from './kernel.js'
 
 Route.group(() => {
-  Route.post('/login', [AuthController, 'login'])
-  Route.post('/register', [UserController, 'store'])
-  Route.get('/api/public/comorbidities', [ComorbidityController, 'index'])
+  /*
+  |--------------------------------------------------------------------------
+  | Rotas Públicas (sem login)
+  |--------------------------------------------------------------------------
+  */
+  Route.get('/public/comorbidities', [ComorbidityController, 'index'])
+  Route.post('/patients/register', [UserController, 'store']) // cadastro de paciente
+  Route.post('/auth/login', [AuthController, 'login'])
 
+  /*
+  |--------------------------------------------------------------------------
+  | Rotas de Usuário Autenticado (Paciente ou Admin)
+  |--------------------------------------------------------------------------
+  */
   Route.group(() => {
-    Route.resource('user', UserController).except(['store']).apiOnly()
-    Route.post('/comorbities', [ComorbidityController, 'store'])
-    Route.group(() => {
-      Route.post('/logout', [AuthController, 'logout'])
-      Route.post('/me', [AuthController, 'me'])
-    }).prefix('/auth')
+    Route.post('/auth/logout', [AuthController, 'logout'])
+    Route.post('/auth/me', [AuthController, 'me'])
   }).use(middleware.auth())
+
+  /*
+  |--------------------------------------------------------------------------
+  | Rotas Administrativas (Backoffice)
+  |--------------------------------------------------------------------------
+  */
+  Route.group(() => {
+    Route.resource('/admin/user', UserController).except(['store']).apiOnly()
+    Route.post('/admin/comorbidities', [ComorbidityController, 'store'])
+  }).use([middleware.auth(), middleware.adminOnly()])
 }).prefix('/api')
