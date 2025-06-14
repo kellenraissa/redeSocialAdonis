@@ -21,7 +21,10 @@ export default class UserController {
       const user = await User.create(data)
       return response.created({ message: 'Usuário criado com sucesso', user })
     } catch (error) {
-      return error
+      return response.badRequest({
+        message: 'Erro ao criar usuário',
+        error: error.messages || error.message,
+      })
     }
   }
 
@@ -30,7 +33,7 @@ export default class UserController {
       const user = await User.findOrFail(params.id)
       return response.ok(user)
     } catch (error) {
-      return response.notFound({ message: 'Usuário não encontraado' })
+      return response.notFound({ message: 'Usuário não encontrado' })
     }
   }
 
@@ -51,6 +54,11 @@ export default class UserController {
   public async destroy({ params, response }: HttpContext) {
     try {
       const user = await User.findOrFail(params.id)
+
+      if (user.deleted_at) {
+        return response.badRequest({ message: 'Usuário já está desativado' })
+      }
+
       user.deleted_at = DateTime.now()
       await user?.save()
 

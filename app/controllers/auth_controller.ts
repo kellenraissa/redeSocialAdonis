@@ -15,6 +15,7 @@ export default class AuthController {
 
       return await User.accessTokens.create(user)
     } catch (error) {
+      console.log(error)
       response.unauthorized({ message: 'Acesso não autorizado' })
     }
   }
