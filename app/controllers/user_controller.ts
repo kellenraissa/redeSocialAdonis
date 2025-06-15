@@ -20,7 +20,9 @@ export default class UserController {
     try {
       const data = await request.validateUsing(CreateUserValidator)
 
-      const user = await User.create(data)
+      const { comorbidities, ...userData } = data
+
+      const user = await User.create(userData)
 
       if (user.role === 'patient') {
         const patient = await user.related('patient').create({})

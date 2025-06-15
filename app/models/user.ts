@@ -38,7 +38,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ columnName: 'status' })
   declare status: string
 
-  @hasOne(() => Patient)
+  @hasOne(() => Patient, {
+    foreignKey: 'user_id',
+  })
   declare patient: HasOne<typeof Patient>
 
   @column.dateTime({ columnName: 'created_at', autoCreate: true, serializeAs: null })

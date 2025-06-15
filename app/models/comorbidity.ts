@@ -14,6 +14,10 @@ export default class Comorbidity extends BaseModel {
 
   @manyToMany(() => Patient, {
     pivotTable: 'patient_comorbidities',
+    localKey: 'comorbidity_id',
+    pivotForeignKey: 'comorbidity_id',
+    relatedKey: 'patient_id',
+    pivotRelatedForeignKey: 'patient_id',
   })
   declare patients: ManyToMany<typeof Patient>
 

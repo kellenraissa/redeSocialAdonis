@@ -11,11 +11,17 @@ export default class Patient extends BaseModel {
   @column({ columnName: 'user_id' })
   declare user_id: number
 
-  @belongsTo(() => User)
+  @belongsTo(() => User, {
+    foreignKey: 'user_id',
+  })
   declare user: BelongsTo<typeof User>
 
   @manyToMany(() => Comorbidity, {
     pivotTable: 'patient_comorbidities',
+    localKey: 'patient_id',
+    pivotForeignKey: 'patient_id',
+    relatedKey: 'comorbidity_id',
+    pivotRelatedForeignKey: 'comorbidity_id',
   })
   declare comorbidities: ManyToMany<typeof Comorbidity>
 
