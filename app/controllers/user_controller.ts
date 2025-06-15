@@ -7,7 +7,9 @@ import { DateTime } from 'luxon'
 export default class UserController {
   public async index({ response }: HttpContext) {
     try {
-      const users = await User.all()
+      const users = await User.query().preload('patient', (patientQuery) => {
+        patientQuery.preload('comorbidities')
+      })
       return response.ok(users)
     } catch (error) {
       return response.internalServerError({ message: 'Erro ao buscar usuários', error })
@@ -19,6 +21,15 @@ export default class UserController {
       const data = await request.validateUsing(CreateUserValidator)
 
       const user = await User.create(data)
+
+      if (user.role === 'patient') {
+        const patient = await user.related('patient').create({})
+        const comorbidityIds = request.input('comorbidities')
+
+        if (comorbidityIds?.length) {
+          await patient.related('comorbidities').attach(comorbidityIds)
+        }
+      }
       return response.created({ message: 'Usuário criado com sucesso', user })
     } catch (error) {
       return response.badRequest({

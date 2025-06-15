@@ -20,7 +20,7 @@ Route.group(() => {
   |--------------------------------------------------------------------------
   */
   Route.get('/public/comorbidities', [ComorbidityController, 'index'])
-  Route.post('/patients/register', [UserController, 'store']) // cadastro de paciente
+  Route.post('/patients/register', [UserController, 'store'])
   Route.post('/auth/login', [AuthController, 'login'])
 
   /*

@@ -1,10 +1,12 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeFetch, beforeFind, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeFetch, beforeFind, column, hasOne } from '@adonisjs/lucid/orm'
 import { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { compose } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
+import Patient from './patient.js'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
 
 type UserQuery = ModelQueryBuilderContract<typeof User>
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
@@ -35,6 +37,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column({ columnName: 'status' })
   declare status: string
+
+  @hasOne(() => Patient)
+  declare patient: HasOne<typeof Patient>
 
   @column.dateTime({ columnName: 'created_at', autoCreate: true, serializeAs: null })
   declare createdAt: DateTime

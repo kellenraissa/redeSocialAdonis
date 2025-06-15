@@ -7,6 +7,7 @@ export const CreateUserValidator = vine.compile(
     password: vine.string().minLength(7),
     name: vine.string().minLength(3),
     role: vine.enum(['admin', 'patient']),
+    comorbidities: vine.array(vine.number()).optional(),
   })
 )
 
