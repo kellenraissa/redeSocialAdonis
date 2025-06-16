@@ -9,3 +9,13 @@ export const CreateComorbityValidator = vine.compile(
 CreateComorbityValidator.messagesProvider = new SimpleMessagesProvider({
   'name.required': 'O nome é obrigatório',
 })
+
+export const ListingValidator = vine.compile(
+  vine.object({
+    search: vine.string().trim().minLength(1).optional(),
+    orderBy: vine.string().trim().optional(),
+    orderDirection: vine.enum(['asc', 'desc'] as const).optional(),
+    page: vine.number().positive().optional(),
+    take: vine.number().positive().max(100).optional(),
+  })
+)

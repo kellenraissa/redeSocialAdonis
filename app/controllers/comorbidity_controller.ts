@@ -1,15 +1,32 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
 import Comorbidity from '#models/comorbidity'
-import { CreateComorbityValidator } from '#validators/comorbity'
+import { CreateComorbityValidator, ListingValidator } from '#validators/comorbity'
 
 export default class ComorbidityController {
-  public async index({ response, auth }: HttpContext) {
-    console.log('🔍 Entrou no ComorbidityController.store')
-    console.log('🔐 Usuário:', auth.user)
+  public async index({ response, request, auth }: HttpContext) {
     try {
-      const comorbities = await Comorbidity.all()
-      return response.ok(comorbities)
+      const {
+        search,
+        orderBy = 'created_at',
+        orderDirection = 'desc',
+        page = 1,
+        take = 3,
+      } = await request.validateUsing(ListingValidator)
+
+      const query = Comorbidity.query()
+
+      if (search) {
+        query.whereILike('name', `%${search}%`)
+      }
+
+      if (orderBy) {
+        query.orderBy(orderBy, orderDirection)
+      }
+
+      const paginated = await query.paginate(page, take)
+
+      return response.ok(paginated.serialize())
     } catch (error) {
       return response.internalServerError({ message: 'Erro ao buscar comorbidades', error })
     }
