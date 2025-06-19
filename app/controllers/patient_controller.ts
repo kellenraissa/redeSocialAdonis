@@ -2,17 +2,32 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Patient from '#models/patient'
 import { UpdateComorbiditiesValidator } from '#validators/patient'
 import User from '#models/user'
+import { ListingValidator } from '#validators/comorbity'
 
 export default class PatientController {
-  public async index({ response }: HttpContext) {
+  public async index({ response, request }: HttpContext) {
     try {
-      const patients = await User.query()
+      const {
+        search,
+        orderBy = 'created_at',
+        orderDirection = 'desc',
+        page = 1,
+        take = 3,
+      } = await request.validateUsing(ListingValidator)
+
+      const patientsQuery = User.query()
         .where('role', 'patient')
         .whereHas('patient', () => {})
         .preload('patient', (patientQuery) => {
           patientQuery.preload('comorbidities')
         })
-      console.log(patients.map((p) => ({ id: p.id, role: p.role })))
+
+      if (search && search.trim() !== '') {
+        patientsQuery.whereILike('name', `%${search.trim()}%`)
+      }
+
+      const patients = await patientsQuery.paginate(page, take)
+
       return response.ok(patients)
     } catch (error) {
       return response.internalServerError({
