@@ -1,11 +1,18 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Patient from '#models/patient'
 import { UpdateComorbiditiesValidator } from '#validators/patient'
+import User from '#models/user'
 
 export default class PatientController {
   public async index({ response }: HttpContext) {
     try {
-      const patients = await Patient.query().preload('user').preload('comorbidities')
+      const patients = await User.query()
+        .where('role', 'patient')
+        .whereHas('patient', () => {})
+        .preload('patient', (patientQuery) => {
+          patientQuery.preload('comorbidities')
+        })
+      console.log(patients.map((p) => ({ id: p.id, role: p.role })))
       return response.ok(patients)
     } catch (error) {
       return response.internalServerError({

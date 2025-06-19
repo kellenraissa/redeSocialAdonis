@@ -5,7 +5,7 @@ import type { BelongsTo, ManyToMany } from '@adonisjs/lucid/types/relations'
 import Comorbidity from './comorbidity.js'
 
 export default class Patient extends BaseModel {
-  @column({ isPrimary: true })
+  @column({ isPrimary: true, columnName: 'patient_id' })
   declare patient_id: number
 
   @column({ columnName: 'user_id' })

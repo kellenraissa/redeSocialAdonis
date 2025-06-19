@@ -12,7 +12,7 @@ CreateComorbityValidator.messagesProvider = new SimpleMessagesProvider({
 
 export const ListingValidator = vine.compile(
   vine.object({
-    search: vine.string().trim().minLength(1).optional(),
+    search: vine.string().trim().optional(),
     orderBy: vine.string().trim().optional(),
     orderDirection: vine.enum(['asc', 'desc'] as const).optional(),
     page: vine.number().positive().optional(),

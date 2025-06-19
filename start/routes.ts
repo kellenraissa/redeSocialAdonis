@@ -8,6 +8,7 @@
 
 import Route from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import PatientController from '#controllers/patient_controller'
 
 const UserController = () => import('#controllers/user_controller')
 const AuthController = () => import('#controllers/auth_controller')
@@ -41,5 +42,6 @@ Route.group(() => {
   Route.group(() => {
     Route.resource('/admin/user', UserController).except(['store']).apiOnly()
     Route.post('/admin/comorbidities', [ComorbidityController, 'store'])
+    Route.get('/patients', [PatientController, 'index'])
   }).use([middleware.auth(), middleware.adminOnly()])
 }).prefix('/api')

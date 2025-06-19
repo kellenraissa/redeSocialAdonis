@@ -16,8 +16,8 @@ export default class ComorbidityController {
 
       const query = Comorbidity.query()
 
-      if (search) {
-        query.whereILike('name', `%${search}%`)
+      if (search && search.trim() !== '') {
+        query.whereILike('name', `%${search.trim()}%`)
       }
 
       if (orderBy) {

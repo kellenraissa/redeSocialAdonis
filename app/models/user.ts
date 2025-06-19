@@ -40,6 +40,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasOne(() => Patient, {
     foreignKey: 'user_id',
+    localKey: 'id',
   })
   declare patient: HasOne<typeof Patient>
 
