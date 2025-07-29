@@ -13,6 +13,8 @@ import PatientController from '#controllers/patient_controller'
 const UserController = () => import('#controllers/user_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const ComorbidityController = () => import('#controllers/comorbidity_controller')
+const DoctorController = () => import('#controllers/doctor_controller')
+const SpecialtyController = () => import('#controllers/specialty_controller')
 
 Route.group(() => {
   /*
@@ -43,5 +45,7 @@ Route.group(() => {
     Route.resource('/admin/user', UserController).except(['store']).apiOnly()
     Route.post('/admin/comorbidities', [ComorbidityController, 'store'])
     Route.get('/patients', [PatientController, 'index'])
+    Route.post('/doctors', [DoctorController, 'store'])
+    Route.post('/specialties', [SpecialtyController, 'store'])
   }).use([middleware.auth(), middleware.adminOnly()])
 }).prefix('/api')
